@@ -3,9 +3,12 @@
     <nav class="navbar  navbar-expand-lg  navbar-light custom-navbar" v-if="token">
       <div class="navigation">
         <div class="element container-fluid">
-          <router-link to="/" class="brand nav-brand" >
+          <router-link to="/" class="brand nav-brand" v-if="currentUser.role === 'user'" >
             <img src="../assets/LOGO.png" alt="logo" width="50" height="50">法律用語辭典
           </router-link>
+          <router-link to="/admin" class="brand nav-brand" v-if="currentUser.role === 'admin'" >
+              <img src="../assets/LOGO.png" alt="logo" width="50" height="50">法律用語辭典
+            </router-link>
           <div class="navElement">
             <ul class="nav">
               <li class="nav-item">
@@ -66,7 +69,7 @@ export default {
    }
 .element{
   display: flex;
-  padding-top:80px;
+  padding-top:40px;
   padding-left: 0px;
 }
 .layout-buttom {

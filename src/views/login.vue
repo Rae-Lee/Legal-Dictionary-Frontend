@@ -233,7 +233,8 @@ figure {
     background: #4292dc; }
 
 #signin {
-  margin-top: 16px; }
+  margin-top: 16px;
+}
 
 .signup-image-link {
   font-size: 14px;

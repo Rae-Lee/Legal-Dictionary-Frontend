@@ -17,18 +17,47 @@ const routes = [
     component: Register
   },
   {
-    path: '/favorites',
+    path:'/admin/login',
+    name: 'adminLogin',
+    component: () => import('../views/adminLogin.vue')
+  },
+  {
+    path: '/admin',
+    name: 'adminHome',
+    component: () => import('../views/adminHome.vue')
+  },
+  {
+    path: '/keywords/:id/articles',
+    name: 'keywords articles',
+    component: () => import('../views/keywordsArticles.vue')
+  },
+  {
+    path: '/keywords/:id/references',
+    name: 'keywords references',
+    component: () => import('../views/keywordsReferences.vue')
+  },
+  {
+    path: '/keywords/:id/notes',
+    name: 'keywords notes',
+    component: () => import('../views/keywordsNotes.vue')
+  },
+  {
+    path: '/references/:id',
+    name:'reference',
+    component: () => import('../views/reference.vue')
+  },
+  {
+    path: '/users/favorites',
     name: 'favorites',
-    /* eslint-disable */
     component: () => import('../views/favorites.vue')
   },
   {
-    path: '/notes',
+    path: '/users/notes',
     name: 'notes',
     component: () => import('../views/notes.vue')
   },
   {
-    path: '/profile',
+    path: '/users/profile',
     name: 'profile',
     component: () => import('../views/profile.vue')
   },
@@ -44,6 +73,7 @@ const routes = [
   },
 ]
 const router = new VueRouter({
+  linkExactActiveClass: "active",
   routes
 })
 export default router
