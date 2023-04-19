@@ -18,28 +18,7 @@
       </div>
 </template>
 <script>
-const dummyKeywords = {
-  keywords: [
-    {
-      id: 306,
-      name: '毒品',
-      updatedAt: '2022-12-15T08:16:09.573Z',
-      createdAt: '2022-12-15T08:16:09.573Z'
-    },
-    {
-      id: 306,
-      name: '刑度',
-      updatedAt: '2022-12-15T08:16:09.573Z',
-      createdAt: '2022-12-15T08:16:09.573Z'
-    },
-    {
-      id: 306,
-      name: '詐欺',
-      updatedAt: '2022-12-15T08:16:09.573Z',
-      createdAt: '2022-12-15T08:16:09.573Z'
-    }
-  ]
-}
+import keywordAPI from './../apis/keywords.js'
 export default {
   data () {
     return {
@@ -47,8 +26,43 @@ export default {
     }
   },
   methods: {
-    fetchKeywords () {
-      this.currentKeywords = dummyKeywords.keywords
+    async fetchKeywords () {
+      try {
+        // 呼叫後端
+        const res = await keywordAPI.getTopKeyword()
+        if (res.data.status !== 200) {
+          this.currentKeywords = [{
+            'id': 1,
+            'name': '毒品',
+            'created_at': '2023-03-10T04:20:30.000Z',
+            'updated_at': '2023-03-10T04:20:30.000Z',
+            'count': 2
+          },
+          {
+            'id': 2,
+            'name': '刑度',
+            'created_at': '2023-03-10T04:20:30.000Z',
+            'updated_at': '2023-03-10T04:20:30.000Z',
+            'count': 1
+          },
+          {
+            'id': 3,
+            'name': '詐欺',
+            'created_at': '2023-03-10T04:20:30.000Z',
+            'updated_at': '2023-03-10T04:20:30.000Z',
+            'count': 1
+          },
+          {
+            'id': 4,
+            'name': '洗錢',
+            'created_at': '2023-03-13T05:33:55.000Z',
+            'updated_at': '2023-03-13T05:33:55.000Z',
+            'count': 1
+          }]
+          return
+        }
+        this.currentKeywords = res.data.data.keywords
+      } catch (err) { console.log(err) }
     }
   },
   created () {
@@ -271,14 +285,6 @@ select {
  *    controls in Android 4.
  * 2. Correct the inability to style clickable types in iOS and Safari.
  */
-button,
-html [type="button"],
-[type="reset"],
-[type="submit"] {
-  -webkit-appearance: button;
-  /* 2 */
-}
-
 /**
  * Remove the inner border and padding in Firefox.
  */
@@ -325,17 +331,6 @@ textarea {
 [type="number"]::-webkit-inner-spin-button,
 [type="number"]::-webkit-outer-spin-button {
   height: auto;
-}
-
-/**
- * 1. Correct the odd appearance in Chrome and Safari.
- * 2. Correct the outline style in Safari.
- */
-[type="search"] {
-  -webkit-appearance: textfield;
-  /* 1 */
-  outline-offset: -2px;
-  /* 2 */
 }
 
 /**

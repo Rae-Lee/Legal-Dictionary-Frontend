@@ -13,7 +13,7 @@
         <li class="list-group-item">{{user.noteCounts}} 篇筆記</li>
       </ul>
       <div class="card-body d-flex justify-content-center">
-      <button  type="button" class="card-link edit-button btn btn-outline-secondary" @click="deleteUser(user)">刪除</button>
+      <button  type="button" class="card-link edit-button btn btn-outline-secondary" @click="deleteUser(user)" v-show="!user.deletedAt">暫停</button><p v-show="user.deletedAt">已暫停用戶帳號</p>
      </div>
   </div>
  </div>

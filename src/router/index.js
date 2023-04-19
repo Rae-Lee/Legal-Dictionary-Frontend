@@ -62,9 +62,14 @@ const routes = [
     component: () => import('../views/profile.vue')
   },
   {
-    path: '/',
+    path:'/search',
     name: 'home',
     component: () => import('../views/home.vue')
+  },
+  {
+    path: '/',
+    name: 'root',
+    redirect: '/login'
   },
   {
     path: '*',

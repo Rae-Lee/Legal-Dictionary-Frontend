@@ -11,7 +11,7 @@
                       <div class="signin-form">
                           <h2 class="form-title">登入</h2>
                           <form class="register-form" id="login-form"
-                          @submit.prevent.stop="handleSubmit">
+                          @submit.prevent.stop="handleSubmit()">
                               <div class="form-group">
                                   <label for="your_name"><i class="zmdi zmdi-account material-icons-name"></i></label>
                                   <input type="text" name="your_name" id="your_name" placeholder="帳號"
@@ -23,7 +23,7 @@
                                   v-model="password" required/>
                               </div>
                               <div class="form-group form-button">
-                                  <input type="submit" name="signin" id="signin" class="form-submit" value="登入">
+                                  <input type="submit" name="signin" id="signin" class="form-submit" value="登入" :disabled="isProcessing">
                               </div>
                           </form>
                       </div>
@@ -32,17 +32,40 @@
           </section>
 </template>
 <script>
+import authAPI from './../apis/auth.js'
+import { errHandler } from './../utils/helpers.js'
 export default {
   data () {
     return {
       account: '',
-      password: ''
+      password: '',
+      isProcessing: false
     }
   },
   methods: {
-    handleSubmit () {
-      const data = JSON.stringify({ account: this.account, password: this.password })
-      console.log(data)
+    async handleSubmit () {
+      try {
+        // 前端驗證
+        if (!this.account || !this.password) {
+          errHandler({ status: 400, message: '帳號或密碼不得空白!' })
+          return
+        }
+        // 呼叫後端
+        this.isProcessing = true
+        const res = await authAPI.login({ account: this.account, password: this.password })
+        const { data } = res
+        if (data.status !== 200) {
+          errHandler(data, this.$router)
+          this.password = ''
+          this.isProcessing = false
+          return
+        }
+        localStorage.setItem('token', data.data.token)
+        this.$router.push('/search')
+      } catch (err) {
+        this.isProcessing = false
+        console.error(err)
+      }
     }
   }
 }

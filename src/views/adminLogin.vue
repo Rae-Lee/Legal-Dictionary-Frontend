@@ -31,17 +31,40 @@
           </section>
 </template>
 <script>
+import authAPI from './../apis/auth.js'
+import { errHandler } from './../utils/helpers.js'
 export default {
   data () {
     return {
       account: '',
-      password: ''
+      password: '',
+      isProcessing: false
     }
   },
   methods: {
-    handleSubmit () {
-      const data = JSON.stringify({ account: this.account, password: this.password })
-      console.log(data)
+    async handleSubmit () {
+      try {
+        // 前端驗證
+        if (!this.account || !this.password) {
+          errHandler({ status: 400, message: '帳號或密碼不得空白!' })
+          return
+        }
+        // 呼叫後端
+        this.isProcessing = true
+        const res = await authAPI.adminLogin({ account: this.account, password: this.password })
+        const { data } = res
+        if (data.status !== 200) {
+          errHandler(data, this.$router)
+          this.password = ''
+          this.isProcessing = false
+          return
+        }
+        localStorage.setItem('token', data.data.token)
+        this.$router.push('/admin')
+      } catch (err) {
+        this.isProcessing = false
+        console.error(err)
+      }
     }
   }
 }

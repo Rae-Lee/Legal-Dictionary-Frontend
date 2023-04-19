@@ -3,7 +3,7 @@
   <!-- Post preview-->
   <div class="post-preview dashboard">
     <h2 class="post-title"><router-link to="/" class="post"><i class="fa-solid fa-angle-left angle"></i></router-link>{{
-      keyword.name }}<i class="fa-regular fa-heart heart"></i></h2>
+      keyword.name }}<i class="fa-regular fa-heart heart" v-show="!keyword.isFavorite"></i><i class="fa-solid fa-heart" v-show="keyword.isFavorite"></i></h2>
     <hr class="horizon">
     <div id="filters" class="filters">
       <router-link to="{name:'keywords/articles', params:{id:keyword.id}}" class="px-3 switch">相關法條</router-link>

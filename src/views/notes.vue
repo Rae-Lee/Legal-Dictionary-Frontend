@@ -6,7 +6,7 @@
             <div class="col-md-10 col-lg-10 col-xl-10 ">
               <div class="post-preview d-flex">
           <h2 class="post-title"><router-link to="{name:'keywords',params:{id:note.Element.id}}" class="post">{{ note.Element.name }}</router-link></h2>
-          <i class="fa-regular fa-heart heart"></i>
+          <i class="fa-regular fa-heart heart" v-show="!keyword.isFavorite"></i><i class="fa-solid fa-heart" v-show="keyword.isFavorite"></i>
           </div>
           </div>
    </div>
@@ -186,9 +186,6 @@ export default {
   -o-border-radius: 20px;
   -ms-border-radius: 20px;
   padding:8px 8px;
-  }
-  .author-img{
-
   }
   .rank-title {
   color: #A48500;

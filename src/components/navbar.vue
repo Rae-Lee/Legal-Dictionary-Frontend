@@ -3,7 +3,7 @@
     <nav class="navbar  navbar-expand-lg  navbar-light custom-navbar" v-if="token">
       <div class="navigation">
         <div class="element container-fluid">
-          <router-link to="/" class="brand nav-brand" v-if="currentUser.role === 'user'" >
+          <router-link to="/search" class="brand nav-brand" v-if="currentUser.role === 'user'" >
             <img src="../assets/LOGO.png" alt="logo" width="50" height="50">法律用語辭典
           </router-link>
           <router-link to="/admin" class="brand nav-brand" v-if="currentUser.role === 'admin'" >

@@ -10,9 +10,11 @@
   "dependencies": {
     "@vue/cli-plugin-router": "^4.2.3",
     "@vue/eslint-config-standard": "^4.0.0",
+    "axios": "^0.19.2",
     "bootstrap": "^5.2.3",
     "core-js": "^3.6.5",
     "moment": "^2.29.4",
+    "sweetalert2": "^9.8.2",
     "uuid": "^3.4.0",
     "vue": "^2.6.11",
     "vue-router": "^3.6.5"

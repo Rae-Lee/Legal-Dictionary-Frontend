@@ -6,8 +6,8 @@
                           <h2 class="form-title">註冊</h2>
                           <form method="POST" class="register-form" id="register-form" @submit.prevent.stop="handleSubmit">
                               <div class="form-group">
-                                  <label for="name"><i class="zmdi zmdi-account material-icons-name"></i></label>
-                                  <input type="text" name="name" id="name" placeholder="帳號"
+                                  <label for="account"><i class="zmdi zmdi-account material-icons-name"></i></label>
+                                  <input type="text" name="account" id="account" placeholder="帳號"
                                   v-model="account" required autofocus/>
                               </div>
                               <div class="form-group">
@@ -28,10 +28,10 @@
                               <div class="form-group">
                                   <label for="re-pass"><i class="zmdi zmdi-lock-outline"></i></label>
                                   <input type="password" name="re_pass" id="re_pass" placeholder="再輸入一次密碼"
-                                  v-model="confirmPassword" required/>
+                                  v-model="checkPassword" required/>
                               </div>
                               <div class="form-group form-button">
-                                  <input type="submit" name="signup" id="signup" class="form-submit" value="註冊"/>
+                                  <input type="submit" name="signup" id="signup" class="form-submit" value="註冊" :disabled="isProcessing"/>
                               </div>
                           </form>
                       </div>
@@ -44,6 +44,8 @@
           </section>
 </template>
 <script>
+import authAPI from './../apis/auth.js'
+import { errHandler } from './../utils/helpers.js'
 export default {
   data () {
     return {
@@ -51,14 +53,40 @@ export default {
       name: '',
       email: '',
       password: '',
-      confirmPassword: ''
+      checkPassword: '',
+      isProcessing: false
     }
   },
   methods: {
-    handleSubmit () {
-      const data = JSON.stringify({ account: this.account, name: this.name, email: this.email, password: this.password, confirmPassword: this.confirmPassword })
-      console.log(data)
+    async handleSubmit () {
+      try {
+        // 前端驗證
+        if (!this.account || !this.name || !this.email || !this.password || !this.checkPassword) {
+          errHandler({ status: 400, message: ['所有欄位皆為必填！'] })
+          return
+        }
+        if (this.password !== this.checkPassword) {
+          errHandler({ status: 400, message: ['密碼與確認密碼不相符!'] })
+          return
+        }
+        // 呼叫後端
+        this.isProcessing = true
+        const res = await authAPI.register({ account: this.account, name: this.name, email: this.email, password: this.password, checkPassword: this.checkPassword })
+        const { data } = res
+        if (data.status !== 200) {
+          this.password = ''
+          this.checkPassword = ''
+          this.isProcessing = false
+          errHandler(data)
+          return
+        }
+        this.$router.push('/login')
+      } catch (err) {
+        this.isProcessing = false
+        console.log(err)
+      }
     }
+
   }
 }
 </script>

@@ -1,7 +1,7 @@
 <template>
     <!-- Post preview-->
     <div class="post-preview">
-        <h2 class="post-title"><router-link to="{name:'keywords', params:{id: keyword.id}}" class="post">{{ keyword.name }}</router-link><i class="fa-regular fa-heart heart"></i></h2>
+        <h2 class="post-title"><router-link to="{name:'keywords', params:{id: keyword.id}}" class="post">{{ keyword.name }}</router-link><i class="fa-solid fa-heart"></i></h2>
         <!-- <h5 class="post-subtitle"><router-link to="/keywords/keyword.id" class="post">{{ keyword.name }}</router-link></h5> -->
         <!-- Divider-->
       <hr class="my-4" />

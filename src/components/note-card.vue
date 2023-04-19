@@ -113,9 +113,6 @@ export default {
   -ms-border-radius: 20px;
   padding:8px 8px;
   }
-  .author-img{
-
-  }
   .rank-title {
   color: #A48500;
   font-size: 20px;
