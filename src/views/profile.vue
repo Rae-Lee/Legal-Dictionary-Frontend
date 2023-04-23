@@ -1,28 +1,29 @@
 <template>
   <section class="signup">
     <div class="container">
-      <div class="signup-content">
+      <div v-if="errMessage">{{ errMessage }}</div>
+      <div class="signup-content" v-if="!errMessage">
         <div class="signup-form">
           <h2 class="form-title">個人資料</h2>
           <form method="POST" class="register-form" id="register-form" @submit.prevent.stop="handleSubmit">
             <div class="form-group">
               <div v-show="!visibility" class="profile">帳號：{{ user.account }}</div>
-              <input type="text" name="name" id="name" placeholder="帳號" v-model="user.account" required autofocus v-show="visibility"/>
+              <input type="text" name="account" id="account" placeholder="帳號" v-model="currentUser.account" required autofocus v-show="visibility"/>
             </div>
             <div class="form-group">
               <div v-show="!visibility"  class="profile">暱稱：{{ user.name }}</div>
-              <input type="text" name="name" id="name" placeholder="暱稱" v-model="user.name" required v-show="visibility"/>
+              <input type="text" name="name" id="name" placeholder="暱稱" v-model="currentUser.name" required v-show="visibility"/>
             </div>
             <div class="form-group">
               <div v-show="!visibility"  class="profile">信箱：{{ user.email }}</div>
-              <input type="email" name="email" id="email" placeholder="信箱" v-model="user.email" required v-show="visibility"/>
+              <input type="email" name="email" id="email" placeholder="信箱" v-model="currentUser.email" required v-show="visibility"/>
             </div>
             <div class="form-group">
               <div v-show="!visibility" class="profile">密碼： *********</div>
-              <input type="password" name="pass" id="pass" placeholder="密碼" v-model="user.password" required v-show="visibility"/>
+              <input type="password" name="pass" id="pass" placeholder="密碼" v-model="currentUser.password" required v-show="visibility"/>
             </div>
             <div class="form-group">
-              <input type="password" name="re_pass" id="re_pass" placeholder="再輸入一次密碼" v-model="user.confirmPassword"
+              <input type="password" name="re_pass" id="re_pass" placeholder="再輸入一次密碼" v-model="currentUser.checkPassword"
                 required v-show="visibility"/>
             </div>
             <div class="form-group form-button">
@@ -39,14 +40,8 @@
   </section>
 </template>
 <script>
-const dummyUser =
-  {
-    id: 34,
-    account: 'user3',
-    name: 'User3',
-    email: 'user3@example.com'
-  }
-
+import userAPI from './../apis/users.js'
+import { errHandler } from '../utils/helpers'
 export default {
   data () {
     return {
@@ -55,25 +50,43 @@ export default {
         name: '',
         email: '',
         password: '',
-        confirmPassword: ''
+        role: 'user'
       },
-      visibility: false
+      currentUser: {
+        account: '',
+        name: '',
+        email: '',
+        password: '',
+        checkPassword: ''
+      },
+      visibility: false,
+      errMessage: ''
     }
   },
   methods: {
     handleSubmit () {
-      const data = JSON.stringify({ account: this.user.account, name: this.user.name, email: this.user.email, password: this.user.password, confirmPassword: this.user.confirmPassword })
-      console.log(data)
     },
     handleEdit () {
       this.visibility = true
     },
-    fetchUser () {
-      this.user = { ...dummyUser }
+    async fetchUser ({ id }) {
+      try {
+        const res = await userAPI.getProfile({ id })
+        const { data } = res
+        if (data.status !== 200) {
+          errHandler(data, this.$router, this.errMessage)
+          return
+        }
+        this.user = { ...this.user, ...data.data }
+      } catch (err) {
+        errHandler({ status: 500 })
+      }
     }
   },
   created () {
-    this.fetchUser()
+    const { id } = this.$route.params
+    console.log({ id })
+    this.fetchUser({ id })
   }
 }
 </script>

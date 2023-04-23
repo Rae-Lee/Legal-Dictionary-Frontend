@@ -45,7 +45,7 @@
 </template>
 <script>
 import authAPI from './../apis/auth.js'
-import { errHandler } from './../utils/helpers.js'
+import { errHandler, successHandler } from './../utils/helpers.js'
 export default {
   data () {
     return {
@@ -81,9 +81,10 @@ export default {
           return
         }
         this.$router.push('/login')
+        successHandler(data)
       } catch (err) {
         this.isProcessing = false
-        console.log(err)
+        errHandler({ status: 500 })
       }
     }
 

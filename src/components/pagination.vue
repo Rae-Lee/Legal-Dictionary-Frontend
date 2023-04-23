@@ -3,9 +3,15 @@
   <div class="col-md-12">
   <div class="block-27">
                 <ul>
-                  <li :class=" { disabled: !previousPage}"><router-link :to="{name: 'favorites', query: { page: previousPage }}"  class="link">&lt;</router-link></li>
-                  <li  v-for="page in listPage" :key="page" :class="{ active: currentPage === page }"><router-link :to="{name: 'favorites', query: { page }}" class="link">{{ page }}</router-link></li>
-                  <li :class="{ disabled: !nextPage }"><router-link :to="{name: 'favorites', query: { page: nextPage }}"  class="link">&gt;</router-link></li>
+                  <li>
+                    <span v-if="!previousPage">&lt;</span>
+                    <router-link :to="{name: $router.history.current.name, query: { page: previousPage }}"  class="link" v-if="previousPage">&lt;</router-link>
+                  </li>
+                  <li  v-for="page in listPage" :key="page" :class="{ active: currentPage === page }"><router-link :to="{name: $router.history.current.name, query: { page }}" class="link">{{ page }}</router-link></li>
+                 <li  :class="{ disabled: currentPage === totalPage.length }" role="button" class="disabled">
+                  <span v-if="!nextPage">&gt;</span>
+                  <router-link :to="{name: $router.history.current.name, query: { page: nextPage }} " class="link" v-if="nextPage">&gt;</router-link>
+                </li>
                 </ul>
               </div>
    </div>
@@ -24,8 +30,8 @@ const pageArray = (totalPage, currentPage) => {
 }
 const pageCount = {
   listPage (totalPage, currentPage) { return pageArray(totalPage, currentPage) },
-  previousPage (currentPage) { return (currentPage - 1) !== 0 ? currentPage - 1 : null },
-  nextPage (currentPage, totalPage) { return (currentPage + 1) !== totalPage ? currentPage + 1 : null }
+  previousPage (currentPage) { return (currentPage - 1) !== 0 ? currentPage - 1 : '' },
+  nextPage (currentPage, totalPage) { return currentPage !== totalPage ? currentPage + 1 : '' }
 }
 export default {
   props: {
@@ -48,6 +54,9 @@ export default {
     nextPage () {
       return pageCount.nextPage(this.currentPage, this.totalPage)
     }
+  },
+  created () {
+    console.log(this.previousPage)
   }
 }
 </script>

@@ -22,22 +22,8 @@
 </div>
 </template>
 <script>
-const dummyData = {
-  'users': [
-    {
-      'account': 'user1',
-      'email': 'user1@example.com',
-      'noteCounts': 2,
-      'favoriteCounts': 2
-    },
-    {
-      'account': 'user2',
-      'email': 'user2@example.com',
-      'noteCounts': 0,
-      'favoriteCounts': 1
-    }
-  ]
-}
+import adminAPI from './../apis/admin.js'
+import { errHandler } from '../utils/helpers'
 export default {
   data () {
     return {
@@ -48,8 +34,18 @@ export default {
     this.fetchData()
   },
   methods: {
-    fetchData () {
-      this.users = dummyData.users
+    async fetchData () {
+      try {
+        const res = await adminAPI.getUsers()
+        const { data } = res
+        if (data.status !== 200) {
+          errHandler(data, this.$router)
+          return
+        }
+        this.users = data.data.users
+      } catch (err) {
+        errHandler({ status: 500 })
+      }
     },
     deleteUser (user) {
       this.users.filter(u => u.id !== user.id)

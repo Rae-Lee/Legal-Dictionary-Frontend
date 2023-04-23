@@ -1,22 +1,25 @@
 import { apiHelper } from './../utils/helpers.js'
-const token = () => { return localStorage.getItem('token') }
+
 export default {
   getTopKeyword () {
     return apiHelper.get('/keywords/top')
   },
-  getKeywordArticles ({ page, keywordId }) {
+  getKeywordArticles ({ page, id }) {
     const searchParams = new URLSearchParams({ page })
-    return apiHelper.get(`/keywords/${keywordId}/articles?${searchParams.toString()}`)
+    return apiHelper.get(`/keywords/${id}/articles?${searchParams.toString()}`)
   },
-  getKeywordReferences ({ page, keywordId }) {
+  getKeywordReferences ({ page, id }) {
     const searchParams = new URLSearchParams({ page })
-    return apiHelper.get(`/keywords/${keywordId}/references?${searchParams.toString()}`)
+    return apiHelper.get(`/keywords/${id}/references?${searchParams.toString()}`)
   },
-  getKeywordNotes ({ page, keywordId }) {
+  getKeywordNotes ({ page, id }) {
     const searchParams = new URLSearchParams({ page })
-    return apiHelper.get(`/keywords/${keywordId}/notes?${searchParams.toString()}`, { header: { Authorization: `Bearer${token()}` } })
+    return apiHelper.get(`/keywords/${id}/notes?${searchParams.toString()}`)
   },
-  addKeyword ({keyword}){
-    return apiHelper.post()
+  addKeyword ({ name }) {
+    return apiHelper.post('/keywords', { name })
+  },
+  getKeyword ({ id }) {
+    return apiHelper.get(`/keywords/${id}`)
   }
 }

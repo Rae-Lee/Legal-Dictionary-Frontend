@@ -7,21 +7,23 @@
               <div class="input-field">
                 <button class="btn-search" type="button">
                 </button>
-                <input id="search" type="text" placeholder="輸入想要查詢的詞彙"  />
+                <input id="search" type="text" placeholder="輸入想要查詢的詞彙" v-model="keyword" @keyup.enter="fetchKeyword" />
               </div>
             </div>
             <div class="suggestion-wrap">
-              <span v-for="keyword in currentKeywords" :key="keyword.id"><router-link to="/keywords" class="keyword">{{keyword.name}}</router-link></span>
+              <span v-for="keyword in currentKeywords" :key="keyword.id" ><router-link :to="{ name:'keywords articles', params: {id: keyword.id}}" class="keyword">{{keyword.name}}</router-link></span>
             </div>
           </fieldset>
         </form>
       </div>
 </template>
 <script>
+import { errHandler } from '../utils/helpers'
 import keywordAPI from './../apis/keywords.js'
 export default {
   data () {
     return {
+      keyword: '',
       currentKeywords: []
     }
   },
@@ -62,7 +64,28 @@ export default {
           return
         }
         this.currentKeywords = res.data.data.keywords
-      } catch (err) { console.log(err) }
+      } catch (err) {
+        errHandler({ status: 500 })
+      }
+    },
+    async fetchKeyword () {
+      try {
+        // 前端驗證
+        if (!this.keyword) {
+          errHandler({ status: 400, message: ['搜尋欄不可空白！'] })
+          return
+        }
+        // 呼叫後端
+        const res = await keywordAPI.addKeyword({ name: this.keyword })
+        const { data } = res
+        if (data.status !== 200) {
+          errHandler(data, this.$router)
+          return
+        }
+        this.$router.push({ name: 'keywords articles', params: { id: data.data.id } })
+      } catch (err) {
+        errHandler({ status: 500 })
+      }
     }
   },
   created () {

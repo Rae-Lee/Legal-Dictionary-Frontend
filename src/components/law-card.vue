@@ -1,11 +1,11 @@
 <template>
 <div class="post-author ">
-  <div class="rank-title">引用排名</div>
+  <div class="rank-title">引用排名 </div>
   <!-- paragraph start -->
   <div v-for=" (article, index) in articles" :key="article.id">
     <div class="post-author d-flex my-5">
         <div class="author-img">
-           <h1 class="ps-3 pe-5 rank" :class="{rank: (index + 1 === 1 || index + 1 === 2 || index + 1 === 3) }">{{ index + 1 }}</h1>
+           <h1 class="ps-3 pe-5" :class="{ rank: timeCites(index) === 1 || timeCites(index) === 2 || timeCites(index) === 3 }">{{ timeCites(index) }}</h1>
         </div>
         <div class="author-content pl-4 ps-5">
           <h5 class="mb-3 field" v-if="article.Code.isAbandon">已廢止</h5>
@@ -26,6 +26,15 @@ export default {
     articles: {
       type: Array,
       required: true
+    },
+    currentPage: {
+      type: Number,
+      default: 1
+    }
+  },
+  methods: {
+    timeCites (index) {
+      return index + (this.currentPage - 1) * 10 + 1
     }
   }
 }
@@ -49,7 +58,6 @@ export default {
 }
 .paragraph{
   font-size:large;
-  white-space: pre-line;
 }
 .field{
    color:#A48500;

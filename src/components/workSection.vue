@@ -9,9 +9,17 @@
              </div>
           <div class="col-md-12 col-lg-6 text-start text-lg-end tabs" data-aos="fade-up" data-aos-delay="100">
             <div id="filters" class="filters">
-              <router-link to="/search" class="px-3">首頁</router-link>
-              <router-link to="/users/favorites" class="px-3" >我的最愛</router-link>
-             <router-link to="/users/notes" class="" >我的筆記</router-link>
+              <router-link to="/" class="px-3">首頁</router-link>
+              <router-link :to="{
+                name: 'favorites', params: {
+                  id: currentUser.id
+                }
+              }" class="px-3" >我的最愛</router-link>
+             <router-link :to="{
+                   name: 'notes', params: {
+                     id: currentUser.id
+                   }
+                 }" >我的筆記</router-link>
             </div>
           </div>
         </div>
@@ -21,7 +29,7 @@
 </template>
 <script>
 const dummyUser = {
-  id: 2,
+  id: 1,
   account: 'user1',
   name: 'User1',
   email: 'user1@example.com',

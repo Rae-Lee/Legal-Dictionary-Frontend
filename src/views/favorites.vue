@@ -4,7 +4,10 @@
     <div class="container px-8 px-lg-5">
       <div class="row gx-8 gx-lg-5 justify-content-center">
           <div class="col-md-10 col-lg-10 col-xl-10 ">
-            <favoriteCard v-for="keyword in keywords" :key="keyword.id" :initial-keyword="keyword"/>
+            <h1 class="text-center" v-if="errMessage">{{ errMessage }}</h1>
+            <div v-if="!errMessage">
+            <favoriteCard v-for="keyword in keywords" :key="keyword.Element.id" :initial-keyword="keyword.Element" />
+            </div>
           </div>
       </div>
      </div>
@@ -14,28 +17,8 @@
 <script>
 import favoriteCard from '../components/favorite-card.vue'
 import pagination from '../components/pagination.vue'
-const dummyData = {
-  keywords:
-    [
-      {
-        id: 306,
-        name: '毒品',
-        updatedAt: '2022-12-15T08:16:09.573Z',
-        createdAt: '2022-12-15T08:16:09.573Z',
-        isFavorite: true
-      },
-      {
-        id: 306,
-        name: '刑度',
-        updatedAt: '2022-12-15T08:16:09.573Z',
-        createdAt: '2022-12-15T08:16:09.573Z',
-        isFavorite: true
-      }
-    ],
-  currentPage: 1,
-  totalPage: 4
-}
-
+import userAPI from './../apis/users.js'
+import { errHandler } from '../utils/helpers'
 export default {
   components: {
     favoriteCard,
@@ -45,22 +28,36 @@ export default {
     return {
       keywords: [],
       currentPage: 1,
-      totalPage: -1
+      totalPage: -1,
+      errHandler: ''
     }
   },
+  beforeRouteUpdate (to, from, next) {
+    const { id } = this.$route.params
+    const { page = '' } = to.query
+    this.fetchData({ page, id })
+    next()
+  },
   created () {
-    this.fetchData()
+    const { id } = this.$route.params
+    const { page = '' } = this.$route.query
+    this.fetchData({ page, id })
   },
   methods: {
-    fetchData () {
-      const {
-        keywords,
-        currentPage,
-        totalPage
-      } = dummyData
-      this.keywords = keywords
-      this.currentPage = currentPage
-      this.totalPage = totalPage
+    async fetchData ({ page, id }) {
+      try {
+        const res = await userAPI.getFavorites({ page, id })
+        const { data } = res
+        if (data.status !== 200) {
+          errHandler(data, this.$router, this.errMessage)
+          return
+        }
+        this.keywords = data.data.likes
+        this.currentPage = Number(data.pagination.currentPage)
+        this.totalPage = Number(data.pagination.totalPage)
+      } catch (err) {
+        errHandler({ status: 500 })
+      }
     }
   }
 }

@@ -32,7 +32,7 @@
 </template>
 <script>
 import authAPI from './../apis/auth.js'
-import { errHandler } from './../utils/helpers.js'
+import { errHandler, successHandler } from './../utils/helpers.js'
 export default {
   data () {
     return {
@@ -61,9 +61,10 @@ export default {
         }
         localStorage.setItem('token', data.data.token)
         this.$router.push('/admin')
+        successHandler(data)
       } catch (err) {
         this.isProcessing = false
-        console.error(err)
+        errHandler({ status: 500 })
       }
     }
   }

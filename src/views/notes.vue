@@ -1,5 +1,7 @@
 <template>
 <div>
+  <div class="container" v-if="errMessage">{{ errMessage }}</div>
+<div v-if="!errMessage">
   <div v-for="note in notes" :key="note.id">
     <div class="px-10 px-lg-5">
         <div class="row gx-4 gx-lg-5 justify-content-center">
@@ -39,49 +41,13 @@
         </div>
   <pagination :currentPage="currentPage" :totalPage="totalPage"/>
 </div>
+  </div>
 </template>
 <script>
 import pagination from '../components/pagination.vue'
 import moment from 'moment'
-const dummyData = {
-  notes:
-    [
-      {
-        'id': 2,
-        'userId': 1,
-        'elementId': 2,
-        'content': '123',
-        'createdAt': '2023-03-28T00:00:00.000Z',
-        'updatedAt': '2023-03-28T00:00:00.000Z',
-        'Element':
-        {
-          'id': 2,
-          'name': '刑度',
-          'createdAt': '2023-03-10T04: 20: 30.000Z',
-          'updatedAt': '2023-03 -10T04: 20: 30.000Z'
-        },
-        'relativeTime': '20 days ago'
-      },
-      {
-        'id': 1,
-        'userId': 1,
-        'elementId': 1,
-        'content': '12345',
-        'createdAt': '2023-03-27T00:00:00.000Z',
-        'updatedAt': '2023-03-27T00:00:00.000Z',
-        'Element':
-        {
-          'id': 1,
-          'name': '毒品',
-          'createdAt': '2023-03-10T04: 20: 30.000Z',
-          'updatedAt': '2023-03 -10T04: 20: 30.000Z'
-        },
-        'relativeTime': '21 days ago'
-      }
-    ],
-  currentPage: 1,
-  totalPage: 4
-}
+import userAPI from './../apis/users.js'
+import { errHandler } from '../utils/helpers'
 export default {
   components: {
     pagination
@@ -91,22 +57,36 @@ export default {
       notes: [],
       currentNote: {},
       currentPage: 1,
-      totalPage: -1
+      totalPage: -1,
+      errHandler: ''
     }
   },
+  beforeRouteUpdate (to, from, next) {
+    const { id } = this.$route.params
+    const { page = '' } = to.query
+    this.fetchData({ page, id })
+    next()
+  },
   created () {
-    this.fetchData()
+    const { id } = this.$route.params
+    const { page = '' } = this.$route.query
+    this.fetchData({ page, id })
   },
   methods: {
-    fetchData () {
-      const {
-        notes,
-        currentPage,
-        totalPage
-      } = dummyData
-      this.notes = notes
-      this.currentPage = currentPage
-      this.totalPage = totalPage
+    async fetchData ({ page, id }) {
+      try {
+        const res = await userAPI.getNotes({ page, id })
+        const { data } = res
+        if (data.status !== 200) {
+          errHandler(data, this.$router, this.errMessage)
+          return
+        }
+        this.notes = data.data.notes
+        this.currentPage = Number(data.pagination.currentPage)
+        this.totalPage = Number(data.pagination.totalPage)
+      } catch (err) {
+        errHandler({ status: 500 })
+      }
     },
     deleteNotes (note) {
       this.notes = this.notes.filter(n => n.id !== note.id)

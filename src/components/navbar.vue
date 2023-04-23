@@ -3,7 +3,7 @@
     <nav class="navbar  navbar-expand-lg  navbar-light custom-navbar" v-if="token">
       <div class="navigation">
         <div class="element container-fluid">
-          <router-link to="/search" class="brand nav-brand" v-if="currentUser.role === 'user'" >
+          <router-link to="/" class="brand nav-brand" v-if="currentUser.role === 'user'" >
             <img src="../assets/LOGO.png" alt="logo" width="50" height="50">法律用語辭典
           </router-link>
           <router-link to="/admin" class="brand nav-brand" v-if="currentUser.role === 'admin'" >
@@ -12,7 +12,7 @@
           <div class="navElement">
             <ul class="nav">
               <li class="nav-item">
-                 <router-link class="nav-link" to="/profile">Hey, {{ currentUser.name }}</router-link>
+                 <router-link class="nav-link" :to="{name: 'profile', params: {id: 1}}">Hey, {{ currentUser.name }}</router-link>
                </li>
              <li class="nav-item px-3">
                  <router-link to="/logout" class="layout-buttom" >登出
@@ -27,7 +27,7 @@
 </template>
 <script>
 const dummyUser = {
-  id: 2,
+  id: 1,
   account: 'user1',
   name: 'User1',
   email: 'user1@example.com',

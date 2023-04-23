@@ -2,62 +2,25 @@
   <div>
     <!-- Post preview-->
     <div class="post-preview dashboard">
-      <h2 class="post-title"><router-link to="/" class="post"><i class="fa-solid fa-angle-left angle"></i></router-link>{{
-        keyword.name }}<i class="fa-regular fa-heart heart" v-show="!keyword.isFavorite"></i><i class="fa-solid fa-heart" v-show="keyword.isFavorite"></i></h2>
+       <keyword :initial-keyword="keyword"/>
       <hr class="horizon">
       <div id="filters" class="filters">
-        <router-link to="{name:'keywords/articles', params:{id:keyword.id}}s" class="px-3 switch">相關法條</router-link>
-        <router-link to="{name:'keywords/references', params:{id:keyword.id}}" class="px-3 switch">相關裁判</router-link>
-        <router-link to="{name:'keywords/notes', params:{id:keyword.id}}" class="px-3 switch">我的筆記</router-link>
+        <router-link :to="{name:'keywords articles', params:{id:keyword.id}}" class="px-3 switch">相關法條</router-link>
+        <router-link :to="{name:'keywords references', params:{id:keyword.id}}" class="px-3 switch">相關裁判</router-link>
+        <router-link :to="{name:'keywords notes', params:{id:keyword.id}}" class="px-3 switch">我的筆記</router-link>
       </div>
-      <noteCard :notes="notes" :keyword-id="keyword.id" @delete-notes="deleteNotes" @add-notes="addNotes" @save-notes="saveNotes"/>
+      <div v-if="errMessage">{{ errMessage }}</div>
+      <noteCard :notes="notes" :keyword-id="keyword.id" @delete-notes="deleteNotes" @add-notes="addNotes" @save-notes="saveNotes" v-if="!errMessage"/>
     </div>
     <pagination :totalPage="totalPage" :currentPage="currentPage" />
   </div>
 </template>
 <script>
+import keyword from '../components/keyword.vue'
 import noteCard from '../components/note-card.vue'
 import pagination from '../components/pagination.vue'
-const dummyData = {
-  keyword: {
-    id: 306,
-    name: '毒品',
-    updatedAt: '2022-12-15T08:16:09.573Z',
-    createdAt: '2022-12-15T08:16:09.573Z',
-    isFavorite: true
-  },
-  notes: [
-    {
-      'id': 39,
-      'content': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque eu interdum urna. Fusce a efficitur est. Duis egestas orci ut quam ornare, eget blandit mi vulputate. Duis congue velit at odio ornare, nec mattis eros tincidunt. In commodo aliquet viverra. Suspendisse tempor gravida fermentum. Praesent sagittis ligula eget aliquet vehicula. Integer ultricies dui turpis, eget sodales massa ullamcorper viverra. Praesent maximus justo placerat aliquam vulputate. Nulla et arcu faucibus, pharetra ante vitae, tincidunt justo. Aenean tellus augue, venenatis a diam eu, posuere consectetur ante.',
-      'userId': 2,
-      'elementId': 13,
-      'user': {
-        name: 'User1'
-      },
-      'relativeTime': '5 天前'
-    },
-    {
-      'id': 40,
-      'content': 'Non ipsam inventore laborum voluptas id recusandae.',
-      'userId': 2,
-      'elementId': 13,
-      'user': {
-        name: 'User1'
-      },
-      'relativeTime': '4 天前'
-    }
-  ],
-  currentPage: 1,
-  totalPage: 4
-}
-const dummyUser = {
-  id: 2,
-  account: 'user1',
-  name: 'User1',
-  email: 'user1@example.com',
-  role: 'user'
-}
+import keywordAPI from './../apis/keywords'
+import { errHandler } from '../utils/helpers'
 export default {
   components: {
     noteCard,
@@ -69,25 +32,42 @@ export default {
       keyword: {
         id: -1,
         name: '',
-        isFavorite: true
+        isFavorite: false
       },
       user: {},
-      currentPage: -1,
-      totalPage: -1
+      currentPage: 1,
+      totalPage: 1,
+      errMessage: ''
     }
   },
+  beforeRouteUpdate (to, from, next) {
+    const { id } = this.$route.params
+    const { page = '' } = to.query
+    this.fetchData({ page, id })
+    next()
+  },
   created () {
-    const { id: keywordId } = this.$route.params
-    this.fetchData(keywordId)
+    const { page = '' } = this.$route.query
+    const { id } = this.$route.params
+    this.fetchData({ page, id })
   },
   methods: {
-    fetchData (keywordId) {
-      console.log(keywordId)
-      this.keyword = { ...this.keyword, ...dummyData.keyword }
-      this.notes = dummyData.notes
-      this.currentPage = dummyData.currentPage
-      this.totalPage = dummyData.totalPage
-      this.user = dummyUser
+    async fetchData ({ page, id }) {
+      try {
+        const resNotes = await keywordAPI.getKeywordNotes({ page, id })
+        const resKeywords = await keywordAPI.getKeyword({ id })
+        const { data } = resNotes
+        if (data.status !== 200) {
+          errHandler(data, this.$router, this.errMessage)
+          return
+        }
+        this.keyword = { ...this.keyword, ...resKeywords.data.data }
+        this.notes = data.data.notes
+        this.currentPage = Number(data.pagination.currentPage)
+        this.totalPage = Number(data.pagination.totalPage)
+      } catch (err) {
+        errHandler({ status: 500 })
+      }
     },
     deleteNotes (noteId) {
       this.notes = this.notes.filter(n => n.id !== noteId)

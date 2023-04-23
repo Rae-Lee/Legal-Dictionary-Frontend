@@ -47,29 +47,24 @@ const routes = [
     component: () => import('../views/reference.vue')
   },
   {
-    path: '/users/favorites',
+    path: '/users/:id/favorites',
     name: 'favorites',
     component: () => import('../views/favorites.vue')
   },
   {
-    path: '/users/notes',
+    path: '/users/:id/notes',
     name: 'notes',
     component: () => import('../views/notes.vue')
   },
   {
-    path: '/users/profile',
+    path: '/users/:id/profile',
     name: 'profile',
     component: () => import('../views/profile.vue')
   },
   {
-    path:'/search',
+    path:'/',
     name: 'home',
     component: () => import('../views/home.vue')
-  },
-  {
-    path: '/',
-    name: 'root',
-    redirect: '/login'
   },
   {
     path: '*',
