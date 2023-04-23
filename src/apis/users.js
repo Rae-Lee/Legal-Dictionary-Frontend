@@ -11,10 +11,10 @@ export default {
     const searchParams = new URLSearchParams({ page })
     return apiHelper.get(`/users/${id}/likes?${searchParams.toString()}`)
   },
-  addFavorite({ id }) {
+  addFavorite ({ id }) {
     return apiHelper.post(`/keywords/${id}/likes`, null)
   },
-  deleteFavorite({ id }) {
+  deleteFavorite ({ id }) {
     return apiHelper.delete(`/keywords/${id}/likes`, null)
   }
 }

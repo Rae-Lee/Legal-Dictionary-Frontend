@@ -12,7 +12,7 @@
               </div>
             </div>
             <div class=" close">
-                <button type="button" class="save-button btn btn-outline-secondary" aria-label="add" @click="addNote">新增</button>
+                <button type="button" class="save-button btn btn-outline-secondary" aria-label="add" @click="addNote(notes[0].Element.id)">新增</button>
             </div>
           </div>
         </div>
@@ -49,15 +49,10 @@ export default {
     notes: {
       type: Array,
       required: true
-    },
-    keywordId: {
-      type: Number,
-      required: true
     }
   },
   data () {
     return {
-      note: this.notes,
       newData: '',
       currentNote: {}
     }
@@ -66,11 +61,11 @@ export default {
     deleteNote (note) {
       this.$emit('delete-notes', note.id)
     },
-    addNote () {
+    addNote (keywordId) {
       this.$emit('add-notes', {
         id: uuidv4(),
         content: this.newData,
-        elementId: this.keywordId
+        elementId: keywordId
       })
       this.newNote = ''
     },

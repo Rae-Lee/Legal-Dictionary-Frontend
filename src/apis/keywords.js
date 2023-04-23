@@ -21,5 +21,8 @@ export default {
   },
   getKeyword ({ id }) {
     return apiHelper.get(`/keywords/${id}`)
+  },
+  getFavorite ({ id }) {
+    return apiHelper.get(`keywords/${id}/likes`)
   }
 }
