@@ -24,5 +24,8 @@ export default {
   },
   getFavorite ({ id }) {
     return apiHelper.get(`keywords/${id}/likes`)
+  },
+  addKeywordNotes ({ id, content }) {
+    return apiHelper.post(`/keywords/${id}/notes`, { content })
   }
 }

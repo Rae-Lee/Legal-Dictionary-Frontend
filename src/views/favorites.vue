@@ -6,7 +6,7 @@
           <div class="col-md-10 col-lg-10 col-xl-10 ">
             <h1 class="text-center" v-if="errMessage">{{ errMessage }}</h1>
             <div v-if="!errMessage">
-            <favoriteCard v-for="keyword in keywords" :key="keyword.Element.id" :initial-keyword="keyword.Element" />
+            <favoriteCard v-for="keyword in keywords" :key="keyword.Element.id" :initial-keyword="keyword.Element" @deleteFavorite="deleteLikes"/>
             </div>
           </div>
       </div>
@@ -58,6 +58,9 @@ export default {
       } catch (err) {
         errHandler({ status: 500 })
       }
+    },
+    deleteLikes (id) {
+      this.keywords = this.keywords.filter(keyword => keyword.id !== id)
     }
   }
 }

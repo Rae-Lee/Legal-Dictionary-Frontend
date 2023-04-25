@@ -2,7 +2,7 @@
   <div>
     <div>
   <!-- Post preview-->
-   <keywordTitle :keyword="keyword" :initial-favorite="isFavorite" v-if="keyword.name"/>
+   <keywordTitle :keyword="keyword" :is-favorite="favorite" :is-processing ="isProcessing" v-if="!isProcessing" @addFavorite="addLike" @deleteFavorite="deleteLike"/>
     <div v-if="errMessage">{{ errMessage }}</div>
     <referenceCard :references="references" v-if="!errMessage"/>
   </div>
@@ -15,11 +15,12 @@ import referenceCard from '../components/reference-card.vue'
 import pagination from '../components/pagination.vue'
 import keywordAPI from './../apis/keywords'
 import { errHandler } from '../utils/helpers'
+import userAPI from './../apis/users.js'
 export default {
   components: {
-    keywordTitle,
     referenceCard,
-    pagination
+    pagination,
+    keywordTitle
   },
   data () {
     return {
@@ -31,7 +32,8 @@ export default {
         id: -1,
         name: ''
       },
-      isFavorite: false
+      favorite: false,
+      isProcessing: true
     }
   },
   created () {
@@ -40,7 +42,7 @@ export default {
     this.fetchData({ page, id })
   },
   beforeRouteUpdate (to, from, next) {
-    const { id } = this.$route.params
+    const { id } = to.params
     const { page = '' } = to.query
     this.fetchData({ page, id })
     next()
@@ -59,7 +61,44 @@ export default {
         this.currentPage = Number(resReferences.data.pagination.currentPage)
         this.totalPage = Number(resReferences.data.pagination.totalPage)
         this.keyword = { ...this.keyword, ...resKeywords.data.data }
-        this.isFavorite = resFavorite.data.data.isFavorite
+        this.favorite = resFavorite.data.data.isFavorite
+        this.isProcessing = false
+      } catch (err) {
+        errHandler({ status: 500 })
+      }
+    },
+    async addLike (id) {
+      try {
+        this.isProcessing = true
+        const res = await userAPI.addFavorite({ id })
+        const { data } = res
+        console.log(data)
+        if (data.status !== 200) {
+          errHandler(data, this.$router)
+          this.isProcessing = false
+          return
+        }
+        this.favorite = true
+        this.isProcessing = false
+      } catch (err) {
+        errHandler({ status: 500 })
+      }
+    },
+    async deleteLike (id) {
+      try {
+        this.isProcessing = true
+        const res = await userAPI.deleteFavorite({ id })
+        const { data } = res
+        if (data.status !== 200) {
+          errHandler(data, this.$router)
+          this.isProcessing = false
+          return
+        }
+        this.$emit('deleteFavorite', id)
+
+        this.favorite = false
+        this.isProcessing = false
+        return
       } catch (err) {
         errHandler({ status: 500 })
       }

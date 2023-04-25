@@ -1,9 +1,12 @@
 import { apiHelper } from './../utils/helpers.js'
-const token = () => { return localStorage.getItem('token') }
 export default {
   getUsers () {
-    return apiHelper.get('/admin/users', {
-      headers: { Authorization: `Bearer${token}` }
-    })
+    return apiHelper.get('/admin/users')
+  },
+  suspendUser ({ id }) {
+    return apiHelper.delete(`/admin/users/${id}`)
+  },
+  unsuspendUser ({ id }) {
+    return apiHelper.put(`/admin/users/${id}`)
   }
 }

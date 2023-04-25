@@ -12,7 +12,7 @@
               </div>
             </div>
             <div class=" close">
-                <button type="button" class="save-button btn btn-outline-secondary" aria-label="add" @click="addNote(notes[0].Element.id)">新增</button>
+                <button type="button" class="save-button btn btn-outline-secondary" aria-label="add" @click="addNote(notes[0].elementId)" :disabled="isLoading">{{ isLoading ? "處理中..." : "新增" }}</button>
             </div>
           </div>
         </div>
@@ -30,51 +30,120 @@
             </div>
           </div>
           <div class=" close">
-              <button type="button" class="btn-close" aria-label="Close" @click="deleteNote(note)"></button>
+              <button type="button" class="btn-close" aria-label="Close" @click="deleteNote(note)" :disabled="isDeleting"></button>
           </div>
         </div>
         <div class="edit">
-             <button type="button" class="edit-button btn btn-outline-secondary mx-2" aria-label="save" @click="saveNote(note)">儲存</button>
-            <button type="button" class="edit-button btn btn-outline-secondary" aria-label="edit" @click="editNote(note)">編輯</button>
+             <button type="button" class="edit-button btn btn-outline-secondary mx-2" aria-label="save" @click="saveNote(note)" :disabled="isEditing" v-show="currentNote.id === note.id">儲存</button>
+            <button type="button" class="edit-button btn btn-outline-secondary" aria-label="edit" @click="editNote(note)" v-show="currentNote.id !== note.id">編輯</button>
         </div>
       </div>
       <!-- note end -->
    </div>
 </template>
 <script>
-import { v4 as uuidv4 } from 'uuid'
 import moment from 'moment'
+import keywordAPI from './../apis/keywords.js'
+import noteAPI from './../apis/notes.js'
+import { errHandler } from './../utils/helpers'
 export default {
   props: {
-    notes: {
+    initialNotes: {
       type: Array,
       required: true
     }
   },
   data () {
     return {
-      newData: '',
-      currentNote: {}
+      notes: this.initialNotes,
+      newNote: '',
+      currentNote: {},
+      isLoading: false,
+      isEditing: false,
+      isDeleting: false
     }
   },
   methods: {
-    deleteNote (note) {
-      this.$emit('delete-notes', note.id)
+    async deleteNote (note) {
+      try {
+        const id = note.id
+        this.isDeleting = true
+        const res = await noteAPI.deleteNotes({ id })
+        const { data } = res
+        if (data.status !== 200) {
+          errHandler(data, this.$router)
+          this.isDeleting = false
+          return
+        }
+        this.notes = this.notes.filter(n => n.id !== id)
+        this.isDeleting = false
+      } catch (err) {
+        this.isDeleting = false
+        errHandler({ status: 500 })
+      }
     },
-    addNote (keywordId) {
-      this.$emit('add-notes', {
-        id: uuidv4(),
-        content: this.newData,
-        elementId: keywordId
-      })
-      this.newNote = ''
+    async addNote (keywordId) {
+      try {
+        const content = this.newNote
+        // 前端驗證
+        if (!content) {
+          errHandler({ status: 400, message: ['筆記內容不得空白!'] })
+        }
+        // 呼叫後端
+        this.isLoading = true
+        const res = await keywordAPI.addKeywordNotes({ id: keywordId, content })
+        const { data } = res
+        if (data.status !== 200) {
+          errHandler(data, this.$router)
+          this.isLoading = false
+          return
+        }
+        const notes = [ data.data, ...this.notes ]
+        this.notes = notes
+        console.log(this.notes)
+        this.isLoading = false
+        this.newNote = ''
+      } catch (err) {
+        this.isLoading = false
+        errHandler({ status: 500 })
+      }
     },
     editNote (note) {
       this.currentNote = { ...note }
     },
-    saveNote (note) {
-      this.$emit('save-notes', this.currentNote)
-      this.currentNote = {}
+    async saveNote (note) {
+      try {
+        const { id, content } = this.currentNote
+        // 前端驗證
+        if (!content) {
+          errHandler({ status: 400, message: ['筆記內容不得空白!'] })
+          return
+        }
+        // 呼叫後端
+        this.isEditing = true
+        const res = await noteAPI.editNotes({ id, content })
+        const { data } = res
+        if (data.status !== 200) {
+          errHandler(data, this.$router)
+          this.isEditing = false
+          return
+        }
+        this.notes = this.notes.map(n => {
+          if (n.id === id) {
+            return {
+              ...n,
+              content
+            }
+          } else {
+            return n
+          }
+        })
+        this.isEditing = false
+        this.currentNote = {}
+      } catch (err) {
+        this.isEditing = false
+        errHandler({ status: 500 })
+      }
     }
   },
   filters: {

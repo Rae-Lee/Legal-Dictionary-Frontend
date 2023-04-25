@@ -2,9 +2,9 @@
   <div>
     <div>
     <!-- Post preview-->
-       <keywordTitle :keyword="keyword" :initial-favorite="isFavorite" v-if="keyword.name"/>
+       <keywordTitle :keyword="keyword" :is-favorite="favorite" :is-processing ="isProcessing" v-if="!isProcessing" @addFavorite="addLike" @deleteFavorite="deleteLike"/>
       <p v-if="errMessage" class="white">{{ errMessage }}</p>
-      <noteCard :notes="notes" @delete-notes="deleteNotes" @add-notes="addNotes" @save-notes="saveNotes" v-if="!errMessage"/>
+      <noteCard :initial-notes="notes"  v-if="!errMessage && !isLoading"/>
     </div>
     <pagination :totalPage="totalPage" :currentPage="currentPage" />
   </div>
@@ -15,11 +15,12 @@ import noteCard from '../components/note-card.vue'
 import pagination from '../components/pagination.vue'
 import keywordAPI from './../apis/keywords'
 import { errHandler } from '../utils/helpers'
+import userAPI from './../apis/users.js'
 export default {
   components: {
-    keywordTitle,
     noteCard,
-    pagination
+    pagination,
+    keywordTitle
   },
   data () {
     return {
@@ -31,12 +32,14 @@ export default {
         id: -1,
         name: ''
       },
-      isFavorite: false,
-      errMessage: ''
+      favorite: false,
+      errMessage: '',
+      isProcessing: true,
+      isLoading: true
     }
   },
   beforeRouteUpdate (to, from, next) {
-    const { id } = this.$route.params
+    const { id } = to.params
     const { page = '' } = to.query
     this.fetchData({ page, id })
     next()
@@ -68,29 +71,44 @@ export default {
         this.currentPage = Number(resNotes.data.pagination.currentPage)
         this.totalPage = Number(resNotes.data.pagination.totalPage)
         this.keyword = { ...this.keyword, ...resKeywords.data.data }
-        this.isFavorite = resFavorite.data.data.isFavorite
+        this.favorite = resFavorite.data.data.isFavorite
+        this.isProcessing = false
+        this.isLoading = false
       } catch (err) {
         errHandler({ status: 500 })
       }
     },
-    deleteNotes (noteId) {
-      this.notes = this.notes.filter(n => n.id !== noteId)
-    },
-    addNotes (payload) {
-      const { id, elementId, content } = payload
-      this.notes.push({
-        id,
-        elementId,
-        userId: this.user.id,
-        content,
-        createdAt: new Date()
-      })
-    },
-    saveNotes (currentNote) {
-      for (let n of this.notes) {
-        if (n.id === currentNote.id) {
-          n.content = currentNote.content
+    async addLike (id) {
+      try {
+        this.isProcessing = true
+        const res = await userAPI.addFavorite({ id })
+        const { data } = res
+        if (data.status !== 200) {
+          errHandler(data, this.$router)
+          this.isProcessing = false
+          return
         }
+        this.favorite = true
+        this.isProcessing = false
+      } catch (err) {
+        errHandler({ status: 500 })
+      }
+    },
+    async deleteLike (id) {
+      try {
+        this.isProcessing = true
+        const res = await userAPI.deleteFavorite({ id })
+        const { data } = res
+        if (data.status !== 200) {
+          errHandler(data, this.$router)
+          this.isProcessing = false
+          return
+        }
+        this.favorite = false
+        this.isProcessing = false
+        return
+      } catch (err) {
+        errHandler({ status: 500 })
       }
     }
   }

@@ -1,14 +1,14 @@
 <template>
 <div class="post-preview dashboard">
   <div>
-  <h2 class="post-title">
-    <a  @click="$router.back()" class="post">
+  <h2 class="post-title" >
+    <router-link to="/" class="post" >
       <i class="fa-solid fa-angle-left angle post" ></i>
-    </a>{{ keyword.name }}
-    <a @click="addFavorite(keyword.id)">
-    <i class="fa-regular fa-heart heart" v-show="!isFavorite" ></i>
+    </router-link>{{ keyword.name }}
+    <a  @click="addFavorite(keyword.id)" :disabled="isProcessing">
+    <i class="fa-regular fa-heart heart" v-show="!isFavorite"  ></i>
     </a>
-    <a @click="deleteFavorite(keyword.id)">
+    <a   @click="deleteFavorite(keyword.id)" :disabled="isProcessing" >
     <i class="fa-solid fa-heart heart" v-show="isFavorite"></i>
     </a>
   </h2>
@@ -22,53 +22,28 @@
 </div>
 </template>
 <script>
-import userAPI from './../apis/users.js'
-import { errHandler } from '../utils/helpers'
+
 export default {
   props: {
     keyword: {
       type: Object,
       required: true
     },
-    initialFavorite: {
+    isFavorite: {
       type: Boolean,
       default: false
-    }
-  },
-  data () {
-    return {
-      isFavorite: this.initialFavorite
+    },
+    isProcessing: {
+      type: Boolean,
+      default: true
     }
   },
   methods: {
     async addFavorite (id) {
-      try {
-        const res = await userAPI.addFavorite({ id })
-        const { data } = res
-        console.log(data)
-        if (data.status !== 200) {
-          errHandler(data, this.$router)
-          return
-        }
-        this.isFavorite = true
-        return
-      } catch (err) {
-        errHandler({ status: 500 })
-      }
+      this.$emit('addFavorite', id)
     },
     async deleteFavorite (id) {
-      try {
-        const res = await userAPI.deleteFavorite({ id })
-        const { data } = res
-        if (data.status !== 200) {
-          errHandler(data, this.$router)
-          return
-        }
-        this.isFavorite = false
-        return
-      } catch (err) {
-        errHandler({ status: 500 })
-      }
+      this.$emit('deleteFavorite', id)
     }
   }
 }
@@ -92,7 +67,9 @@ export default {
   padding-right: 50px;
   font-size: 20px;
 }
-
+.post :hover{
+  color:#A48500;
+}
 .post-preview {
   text-decoration: none;
 }
@@ -173,5 +150,8 @@ export default {
   font-size: 20px;
   font-weight: bold;
   padding-right: 50px;
+}
+.heart :hover{
+  color: #A48500;
 }
 </style>

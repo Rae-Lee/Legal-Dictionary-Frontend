@@ -47,7 +47,7 @@ export default {
       try {
         // 前端驗證
         if (!this.account || !this.password) {
-          errHandler({ status: 400, message: '帳號或密碼不得空白!' })
+          errHandler({ status: 400, message: ['帳號或密碼不得空白!'] })
           return
         }
         // 呼叫後端

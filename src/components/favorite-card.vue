@@ -1,12 +1,19 @@
 <template>
     <!-- Post preview-->
-    <div class="post-preview">
-        <h2 class="post-title"><router-link :to="{name:'keywords articles', params:{id: keyword.id}}" class="post">{{ keyword.name }}</router-link><i class="fa-solid fa-heart heart"></i></h2>
+    <div class="post-preview ">
+      <div class="post-preview d-flex">
+        <h2 class="post-title"><router-link :to="{name:'keywords articles', params:{id: keyword.id}}" class="post">{{ keyword.name }}</router-link></h2>
+          <a @click="deleteFavorite(keyword.id)">
+          <i class="fa-solid fa-heart heart" ></i>
+          </a>
+      </div>
         <!-- Divider-->
       <hr class="my-4" />
     </div>
 </template>
 <script>
+import userAPI from './../apis/users.js'
+import { errHandler } from '../utils/helpers'
 export default {
   props: {
     initialKeyword: {
@@ -17,6 +24,22 @@ export default {
   data () {
     return {
       keyword: this.initialKeyword
+    }
+  },
+  methods: {
+    async deleteFavorite (id) {
+      try {
+        const res = await userAPI.deleteFavorite({ id })
+        const { data } = res
+        if (data.status !== 200) {
+          errHandler(data, this.$router)
+          return
+        }
+        this.$emit('deleteFavorite', id)
+        return
+      } catch (err) {
+        errHandler({ status: 500 })
+      }
     }
   }
 }
@@ -51,5 +74,8 @@ export default {
   margin-left:50px;
   width:20px;
   height:20px
+}
+.heart :hover{
+  color: #A48500;
 }
 </style>
