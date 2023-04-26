@@ -3,8 +3,8 @@
     <div>
   <!-- Post preview-->
    <keywordTitle :keyword="keyword" :is-favorite="favorite" :is-processing ="isProcessing" v-if="!isProcessing" @addFavorite="addLike" @deleteFavorite="deleteLike"/>
-    <div v-if="errMessage">{{ errMessage }}</div>
-    <referenceCard :references="references" v-if="!errMessage"/>
+   <div v-if="errMessage"><h1 class="text-center err" v-if="errMessage">{{ errMessage }}</h1></div>
+    <referenceCard :references="references" :currentPage="currentPage" v-if="!errMessage"/>
   </div>
   <pagination :totalPage="totalPage" :currentPage="currentPage"/>
  </div>
@@ -54,14 +54,28 @@ export default {
         const resKeywords = await keywordAPI.getKeyword({ id })
         const resFavorite = await keywordAPI.getFavorite({ id })
         if (resReferences.data.status !== 200) {
-          errHandler(resReferences.data, this.$router, this.errMessage)
-          return
+          if (resReferences.data.status === 404) {
+            this.errMessage = resReferences.data.message
+          }
+          errHandler(resReferences.data, this.$router)
+        } else {
+          this.references = resReferences.data.data.references
+          this.currentPage = Number(resReferences.data.pagination.currentPage)
+          this.totalPage = Number(resReferences.data.pagination.totalPage)
         }
-        this.references = resReferences.data.data.references
-        this.currentPage = Number(resReferences.data.pagination.currentPage)
-        this.totalPage = Number(resReferences.data.pagination.totalPage)
-        this.keyword = { ...this.keyword, ...resKeywords.data.data }
-        this.favorite = resFavorite.data.data.isFavorite
+        if (resKeywords.data.status !== 200) {
+          if (resKeywords.data.status === 404) {
+            this.errMessage = resKeywords.data.message
+          }
+          errHandler(resKeywords.data, this.$router)
+        } else {
+          this.keyword = { ...this.keyword, ...resKeywords.data.data }
+        }
+        if (resFavorite.data.status !== 200) {
+          errHandler(resFavorite.data, this.$router)
+        } else {
+          this.favorite = resFavorite.data.data.isFavorite
+        }
         this.isProcessing = false
       } catch (err) {
         errHandler({ status: 500 })

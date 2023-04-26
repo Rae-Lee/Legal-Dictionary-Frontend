@@ -18,7 +18,6 @@
   </div>
   <!-- paragraph end -->
 </div>
-
 </template>
 <script>
 export default {
@@ -57,7 +56,8 @@ export default {
   color:#535353;
 }
 .paragraph{
-  font-size:large;
+  font-size:20px;
+  white-space: pre-wrap;
 }
 .field{
    color:#A48500;

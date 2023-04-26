@@ -1,6 +1,6 @@
 <template>
 <div>
-  <div class="container" v-if="errMessage">{{ errMessage }}</div>
+  <div class="container" v-if="errMessage"><h1 class="text-center err" v-if="errMessage">{{ errMessage }}</h1></div>
 <div v-if="!errMessage && !isProcessing">
   <div v-for="note in notes" :key="note.id">
     <div class="px-10 px-lg-5">
@@ -8,7 +8,7 @@
             <div class="col-md-10 col-lg-10 col-xl-10 " >
               <div class="post-preview d-flex justify-content-between">
           <div class="post-preview d-flex ">
-          <h2 class="post-title"><router-link to="{name:'keywords articles',params:{id:note.element_id}}" class="post">{{ note.elementName }}</router-link></h2>
+          <span class="post-title"><router-link :to="{name:'keywords articles',params:{id:note.element_id}}" class="post">{{ note.elementName }}</router-link></span>
           <a  @click="addLike(note.element_id)" :disabled="isProcessing">
            <i class="fa-regular fa-heart heart" v-show="!note.isFavorite"  ></i>
          </a>
@@ -66,7 +66,7 @@ export default {
       currentNote: {},
       currentPage: 1,
       totalPage: -1,
-      errHandler: '',
+      errMessage: '',
       isProcessing: false,
       isEditing: false,
       isDeleting: false
@@ -89,7 +89,11 @@ export default {
         const res = await userAPI.getNotes({ page, id })
         const { data } = res
         if (data.status !== 200) {
-          errHandler(data, this.$router, this.errMessage)
+          if (data.status === 404) {
+            this.errMessage = data.message
+            return
+          }
+          errHandler(data, this.$router)
           return
         }
         this.notes = data.data.notes
@@ -234,6 +238,8 @@ export default {
   margin-top: 20px;
   margin-bottom: 10px;
   margin-left:150px;
+  font-size: 36px;
+  font-weight: bold;
 }
 
 .post-subtitle {
@@ -323,5 +329,8 @@ abbr{
 .horizon{
   width:950px;
   margin:0 auto;
+}
+.err{
+  color:#535353;
 }
 </style>

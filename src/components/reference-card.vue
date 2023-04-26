@@ -5,13 +5,13 @@
     <div v-for=" (reference, index) in references" :key="reference.id">
       <div class="post-author d-flex my-5">
         <div class="author-img">
-          <h1 class="ps-3 pe-5" :class="{rank: (index + 1 === 1 || index + 1 ===2 || index + 1 === 3)}">{{ index + 1 }}</h1>
+          <h1 class="ps-3 pe-5" :class="{ rank: timeCites(index) === 1 || timeCites(index) === 2 || timeCites(index) === 3 }">{{ timeCites(index) }}</h1>
         </div>
         <div class="author-content pl-4 ps-5">
           <h5 class="mb-3 field">{{ reference.Field.name }}</h5>
-          <h3 class="mb-3"><router-link to="{name:'references', params:{id: reference.id}}" title="" rel="author" class="text-capitalize">{{ reference.name }}</router-link>
+          <h3 class="mb-3"><router-link :to="{name:'reference', params:{id: reference.id}}"  class="text-capitalize">{{ reference.name }}</router-link>
           </h3>
-          <p class="paragraph" v-html="reference.quote"></p>
+          <p class="paragraph mb-3" v-html="reference.quote"></p>
         </div>
       </div>
       <hr class="h">
@@ -25,6 +25,15 @@ export default {
     references: {
       type: Array,
       required: true
+    },
+    currentPage: {
+      type: Number,
+      default: 1
+    }
+  },
+  methods: {
+    timeCites (index) {
+      return index + (this.currentPage - 1) * 10 + 1
     }
   }
 }
@@ -51,8 +60,8 @@ export default {
 }
 
 .paragraph {
-  font-size: large;
-  white-space: pre-line;
+  font-size: 20px;
+   white-space: pre-wrap;
 }
 
 .field {

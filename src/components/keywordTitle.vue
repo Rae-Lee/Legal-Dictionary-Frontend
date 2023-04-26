@@ -1,7 +1,7 @@
 <template>
 <div class="post-preview dashboard">
   <div>
-  <h2 class="post-title" >
+  <span class="post-title" >
     <router-link to="/" class="post" >
       <i class="fa-solid fa-angle-left angle post" ></i>
     </router-link>{{ keyword.name }}
@@ -11,9 +11,9 @@
     <a   @click="deleteFavorite(keyword.id)" :disabled="isProcessing" >
     <i class="fa-solid fa-heart heart" v-show="isFavorite"></i>
     </a>
-  </h2>
+  </span>
    <hr class="horizon">
-        <div id="filters" class="filters">
+        <div id="filters" class="filters mt-5">
           <router-link :to="{ name: 'keywords articles', params: { id: keyword.id } }" class="px-3 switch">相關法條</router-link>
           <router-link :to="{ name: 'keywords references', params: { id: keyword.id } }" class="px-3 switch">相關裁判</router-link>
           <router-link :to="{ name: 'keywords notes', params: { id: keyword.id } }" class="px-3 switch">我的筆記</router-link>
@@ -75,11 +75,12 @@ export default {
 }
 
 .post-title {
-  font-size: 45px;
+  font-size: 36px;
   text-decoration: none;
   color: #535353;
   margin-top: 20px;
   margin-bottom: 2px;
+  font-weight: bold;
 }
 
 .post-subtitle {

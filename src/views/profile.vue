@@ -1,11 +1,11 @@
 <template>
   <section class="signup">
     <div class="container">
-      <div v-if="errMessage">{{ errMessage }}</div>
+       <div v-if="errMessage"><h1 class="text-center err" v-if="errMessage">{{ errMessage }}</h1></div>
       <div class="signup-content" v-if="!errMessage">
         <div class="signup-form">
           <h2 class="form-title">個人資料</h2>
-          <form method="POST" class="register-form" id="register-form" @submit.prevent.stop="handleSubmit">
+          <form method="POST" class="register-form" id="register-form" @submit.prevent.stop="handleSubmit(user.id)">
             <div class="form-group">
               <div v-show="!visibility" class="profile">帳號：{{ user.account }}</div>
               <input type="text" name="account" id="account" placeholder="帳號" v-model="currentUser.account" required autofocus v-show="visibility"/>
@@ -20,14 +20,15 @@
             </div>
             <div class="form-group">
               <div v-show="!visibility" class="profile">密碼： *********</div>
-              <input type="password" name="pass" id="pass" placeholder="密碼" v-model="currentUser.password" required v-show="visibility"/>
+              <input type="password" name="password" id="password" placeholder="密碼" v-model="currentUser.password" required v-show="visibility"/>
             </div>
             <div class="form-group">
-              <input type="password" name="re_pass" id="re_pass" placeholder="再輸入一次密碼" v-model="currentUser.checkPassword"
+              <input type="password" name="checkPassword" id="checkPassword" placeholder="再輸入一次密碼" v-model="currentUser.checkPassword"
                 required v-show="visibility"/>
             </div>
-            <div class="form-group form-button">
-              <input type="submit" name="signup" id="signup" class="form-submit" value="儲存" />
+            <div class="form-group form-button d-flex">
+              <input type="submit" name="signup" id="signup" class="form-submit" value="儲存" :disabled="isProcessing" v-show="visibility"/>
+              <button class="save form-submit mx-3" v-show="visibility" @click="handleCancel">取消</button>
             </div>
           </form>
         </div>
@@ -41,15 +42,15 @@
 </template>
 <script>
 import userAPI from './../apis/users.js'
-import { errHandler } from '../utils/helpers'
+import { errHandler, successHandler } from '../utils/helpers'
 export default {
   data () {
     return {
       user: {
+        id: -1,
         account: '',
         name: '',
         email: '',
-        password: '',
         role: 'user'
       },
       currentUser: {
@@ -60,21 +61,74 @@ export default {
         checkPassword: ''
       },
       visibility: false,
-      errMessage: ''
+      errMessage: '',
+      isProcessing: false
     }
   },
   methods: {
-    handleSubmit () {
+    async handleSubmit (id) {
+      try {
+        let { account, name, email, password, checkPassword } = this.currentUser
+        // 前端驗證
+        if (!account || !name || !email || !password || !checkPassword) {
+          errHandler({ status: 400, message: ['所有欄位皆為必填！'] })
+          return
+        }
+        if (password !== checkPassword) {
+          errHandler({ status: 400, message: ['密碼與確認密碼不相符!'] })
+          return
+        }
+        // 呼叫後端
+        this.isProcessing = true
+        const res = await userAPI.editProfile({ id, account, name, email, password, checkPassword })
+        const { data } = res
+        if (data.status !== 200) {
+          if (data.status === 404) {
+            this.errMessage = data.message
+            return
+          }
+          password = ''
+          checkPassword = ''
+          this.isProcessing = false
+          errHandler(data, this.$router)
+          return
+        }
+        this.visibility = false
+        this.isProcessing = false
+        this.user = data.data
+        successHandler(data)
+        account = ''
+        name = ''
+        email = ''
+        password = ''
+        checkPassword = ''
+      } catch (err) {
+        this.isProcessing = false
+        errHandler({ status: 500 })
+      }
     },
     handleEdit () {
       this.visibility = true
+      this.currentUser = { ...this.currentUser, ...this.user }
+    },
+    handleCancel () {
+      this.visibility = false
+      this.currentUser.account = ''
+      this.currentUser.name = ''
+      this.currentUser.email = ''
+      this.currentUser.password = ''
+      this.currentUser.checkPassword = ''
     },
     async fetchUser ({ id }) {
       try {
         const res = await userAPI.getProfile({ id })
         const { data } = res
         if (data.status !== 200) {
-          errHandler(data, this.$router, this.errMessage)
+          if (data.status === 404) {
+            this.errMessage = data.message
+            return
+          }
+          errHandler(data, this.$router)
           return
         }
         this.user = { ...this.user, ...data.data }

@@ -16,5 +16,8 @@ export default {
   },
   deleteFavorite ({ id }) {
     return apiHelper.delete(`/keywords/${id}/likes`, null)
+  },
+  editProfile ({ id, account, name, email, password, checkPassword }) {
+    return apiHelper.put(`/users/${id}`, { account, name, email, password, checkPassword })
   }
 }

@@ -1,45 +1,31 @@
 <template>
+  <div>
+  <div v-for="keyword in keywords" :key="keyword.Element.id" >
     <!-- Post preview-->
     <div class="post-preview ">
       <div class="post-preview d-flex">
-        <h2 class="post-title"><router-link :to="{name:'keywords articles', params:{id: keyword.id}}" class="post">{{ keyword.name }}</router-link></h2>
-          <a @click="deleteFavorite(keyword.id)">
+        <span class="post-title"><router-link :to="{name:'keywords articles', params:{id: keyword.Element.id}}" class="post">{{ keyword.Element.name }}</router-link></span>
+          <a @click="deleteFavorite(keyword.Element.id)">
           <i class="fa-solid fa-heart heart" ></i>
           </a>
       </div>
         <!-- Divider-->
       <hr class="my-4" />
     </div>
+  </div>
+  </div>
 </template>
 <script>
-import userAPI from './../apis/users.js'
-import { errHandler } from '../utils/helpers'
 export default {
   props: {
-    initialKeyword: {
-      type: Object,
+    keywords: {
+      type: Array,
       required: true
-    }
-  },
-  data () {
-    return {
-      keyword: this.initialKeyword
     }
   },
   methods: {
     async deleteFavorite (id) {
-      try {
-        const res = await userAPI.deleteFavorite({ id })
-        const { data } = res
-        if (data.status !== 200) {
-          errHandler(data, this.$router)
-          return
-        }
-        this.$emit('deleteFavorite', id)
-        return
-      } catch (err) {
-        errHandler({ status: 500 })
-      }
+      this.$emit('deleteFavorite', id)
     }
   }
 }
@@ -60,6 +46,8 @@ export default {
   color: #535353;
   margin-top: 20px;
   margin-bottom: 10px;
+  font-size: 36px;
+  font-weight: bold;
 }
 
 .post-subtitle {
@@ -73,7 +61,8 @@ export default {
   color:#535353;
   margin-left:50px;
   width:20px;
-  height:20px
+  height:20px;
+  margin-top:40px;
 }
 .heart :hover{
   color: #A48500;

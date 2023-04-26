@@ -42,9 +42,7 @@ export const errHandler = (data, router, errMessage) => {
       icon: 'error',
       title: data.message
     })
-  } else if (code === 404) {
-    errMessage = data.message
-  } else {
+  } else if (code === 500) {
     Swal.fire({
       icon: 'error',
       title: '無法取得資料，請稍後再試！'

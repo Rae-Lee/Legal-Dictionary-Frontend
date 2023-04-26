@@ -2,11 +2,12 @@
   <div>
     <!-- Post preview-->
     <div class="post-preview dashboard"  >
-      <h2 class="post-title"><router-link to="/keywords/references" class="post"><i class="fa-solid fa-angle-left angle"></i></router-link>{{
+      <h2 class="post-title"><a @click="$router.back()" class="post"><i class="fa-solid fa-angle-left angle"></i></a>{{
         reference.name }}</h2>
       <hr class="horizon">
-      <div class="content">
-        <p v-html="reference.content" class="paragraph"></p>
+      <div v-if="errMessage"><h1 class="text-center err" v-if="errMessage">{{ errMessage }}</h1></div>
+      <div class="content" v-if="!errMessage">
+        <p v-html="reference.content" class="paragraph-content"></p>
         <div class="foot"></div>
       </div>
   </div>
@@ -18,7 +19,8 @@ import { errHandler } from '../utils/helpers'
 export default {
   data () {
     return {
-      reference: {}
+      reference: {},
+      errMessage: ''
     }
   },
   created () {
@@ -31,7 +33,11 @@ export default {
         const res = await referenceAPI.getReferences({ id })
         const { data } = res
         if (data.status !== 200) {
-          errHandler(data, this.$router, this.errMessage)
+          if (data.status === 404) {
+            this.errMessage = data.message
+            return
+          }
+          errHandler(data, this.$router)
           return
         }
         this.reference = data.data
@@ -82,14 +88,14 @@ export default {
   margin-top:50px;
   margin-bottom:50px;
 }
-.paragraph{
-  white-space: pre-line;
-  margin:0 auto;
+.paragraph-content{
+  white-space: pre-wrap;
   font-size:30px;
-  padding-left:200px;
+  margin:0 auto;
+  padding-left: 110px;
 }
 .content{
-  margin-bottom: 5px;
+  margin-bottom: 1px;
 }
 .foot{
   height:100px;

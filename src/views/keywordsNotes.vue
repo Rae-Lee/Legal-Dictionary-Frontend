@@ -3,7 +3,7 @@
     <div>
     <!-- Post preview-->
        <keywordTitle :keyword="keyword" :is-favorite="favorite" :is-processing ="isProcessing" v-if="!isProcessing" @addFavorite="addLike" @deleteFavorite="deleteLike"/>
-      <p v-if="errMessage" class="white">{{ errMessage }}</p>
+      <div v-if="errMessage"><h1 class="text-center err" v-if="errMessage">{{ errMessage }}</h1></div>
       <noteCard :initial-notes="notes"  v-if="!errMessage && !isLoading"/>
     </div>
     <pagination :totalPage="totalPage" :currentPage="currentPage" />
@@ -56,22 +56,28 @@ export default {
         const resKeywords = await keywordAPI.getKeyword({ id })
         const resFavorite = await keywordAPI.getFavorite({ id })
         if (resNotes.data.status !== 200) {
-          errHandler(resNotes.data, this.$router, this.errMessage)
-          return
+          if (resNotes.data.status === 404) {
+            this.errMessage = resNotes.data.message
+          }
+          errHandler(resNotes.data, this.$router)
+        } else {
+          this.notes = resNotes.data.data.notes
+          this.currentPage = Number(resNotes.data.pagination.currentPage)
+          this.totalPage = Number(resNotes.data.pagination.totalPage)
         }
         if (resKeywords.data.status !== 200) {
-          errHandler(resKeywords.data, this.$router, this.errMessage)
-          return
+          if (resKeywords.data.status === 404) {
+            this.errMessage = resKeywords.data.message
+          }
+          errHandler(resKeywords.data, this.$router)
+        } else {
+          this.keyword = { ...this.keyword, ...resKeywords.data.data }
         }
         if (resFavorite.data.status !== 200) {
-          errHandler(resFavorite.data, this.$router, this.errMessage)
-          return
+          errHandler(resFavorite.data, this.$router)
+        } else {
+          this.favorite = resFavorite.data.data.isFavorite
         }
-        this.notes = resNotes.data.data.notes
-        this.currentPage = Number(resNotes.data.pagination.currentPage)
-        this.totalPage = Number(resNotes.data.pagination.totalPage)
-        this.keyword = { ...this.keyword, ...resKeywords.data.data }
-        this.favorite = resFavorite.data.data.isFavorite
         this.isProcessing = false
         this.isLoading = false
       } catch (err) {
