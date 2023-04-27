@@ -1,6 +1,6 @@
  <template>
  <!-- ======= Works Section ======= -->
-<section v-if="token && currentUser.role === 'user'" class="section  site-filter">
+<section v-if="getRouteName !== 'login' && getRouteName !== 'register' && getRouteName !== 'adminLogin' && role === 'user'" class="section  site-filter">
       <div class="work-place">
         <div class="row mb-5 align-items-center d-flex">
            <div class="col-md-12 col-lg-6 mb-4 mb-lg-0 sign" data-aos="fade-up">
@@ -28,36 +28,13 @@
     <!-- End  Works Section -->
 </template>
 <script>
-const dummyUser = {
-  id: 1,
-  account: 'user1',
-  name: 'User1',
-  email: 'user1@example.com',
-  role: 'user'
-}
+import { mapState } from 'vuex'
 export default {
-  data () {
-    return {
-      currentUser: {
-        id: -1,
-        account: '',
-        name: '',
-        email: '',
-        role: 'user'
-      },
-      token: '123'
+  computed: {
+    ...mapState(['currentUser', 'role', 'isAuthenticated']),
+    getRouteName () {
+      return this.$route.name
     }
-  },
-  methods: {
-    fetchUser () {
-      this.currentUser = {
-        ...this.currentUser,
-        ...dummyUser
-      }
-    }
-  },
-  created () {
-    this.fetchUser()
   }
 }
 </script>

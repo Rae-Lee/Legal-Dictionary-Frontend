@@ -19,5 +19,8 @@ export default {
   },
   editProfile ({ id, account, name, email, password, checkPassword }) {
     return apiHelper.put(`/users/${id}`, { account, name, email, password, checkPassword })
+  },
+  getCurrentUser () {
+    return apiHelper.get('/users/current_user')
   }
 }

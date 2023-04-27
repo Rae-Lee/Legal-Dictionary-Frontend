@@ -1,61 +1,47 @@
 <template>
     <!-- ======= Navbar ======= -->
-    <nav class="navbar  navbar-expand-lg  navbar-light custom-navbar" v-if="token">
+    <nav class="navbar  navbar-expand-lg  navbar-light custom-navbar" v-if="getRouteName !== 'login' && getRouteName !== 'register' && getRouteName !== 'adminLogin'">
       <div class="navigation">
         <div class="element container-fluid">
-          <router-link to="/" class="brand nav-brand" v-if="currentUser.role === 'user'" >
+          <div v-if="!role">
+           <img src="../assets/LOGO.png" alt="logo" width="50" height="50">
+           <h3>法律用語辭典</h3>
+           </div>
+          <router-link to="/" class="brand nav-brand" v-if="role === 'user'" >
             <img src="../assets/LOGO.png" alt="logo" width="50" height="50">法律用語辭典
           </router-link>
-          <router-link to="/admin" class="brand nav-brand" v-if="currentUser.role === 'admin'" >
+          <router-link to="/admin" class="brand nav-brand" v-if="role === 'admin'" >
               <img src="../assets/LOGO.png" alt="logo" width="50" height="50">法律用語辭典
             </router-link>
           <div class="navElement">
-            <ul class="nav">
+            <ul class="nav" v-if="isAuthenticated">
               <li class="nav-item">
-                 <router-link class="nav-link" :to="{name: 'profile', params: {id: 1}}">Hey, {{ currentUser.name }}</router-link>
+                 <router-link class="nav-link" :to="{name: 'profile', params: {id: currentUser.id}}">{{ currentUser.name }}，你好</router-link>
                </li>
              <li class="nav-item px-3">
-                 <router-link to="/logout" class="layout-buttom" >登出
-              </router-link>
+                 <a class="layout-buttom" @click="logout" >登出
+                 </a>
              </li>
           </ul>
           </div>
-
         </div>
       </div>
     </nav>
 </template>
 <script>
-const dummyUser = {
-  id: 1,
-  account: 'user1',
-  name: 'User1',
-  email: 'user1@example.com',
-  role: 'user'
-}
+import { mapState } from 'vuex'
 export default {
-  data () {
-    return {
-      currentUser: {
-        id: -1,
-        account: '',
-        name: '',
-        email: '',
-        role: 'user'
-      },
-      token: '123'
+  computed: {
+    ...mapState(['currentUser', 'role', 'isAuthenticated']),
+    getRouteName () {
+      return this.$route.name
     }
   },
   methods: {
-    fetchUser () {
-      this.currentUser = {
-        ...this.currentUser,
-        ...dummyUser
-      }
+    logout () {
+      this.$store.commit('revokeAuthentication')
+      this.$router.push('/login')
     }
-  },
-  created () {
-    this.fetchUser()
   }
 }
 
