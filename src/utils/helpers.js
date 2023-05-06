@@ -1,7 +1,7 @@
 import axios from 'axios'
 import Swal from 'sweetalert2'
 
-const baseURL = 'http://localhost:3000/api/v1'
+const baseURL = 'http://legal-dictionary.ap-southeast-1.elasticbeanstalk.com/api/v1'
 const axiosInstance = axios.create({ baseURL })
 axiosInstance.interceptors.request.use(config => {
   const token = localStorage.getItem('token')

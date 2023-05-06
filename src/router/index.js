@@ -75,7 +75,7 @@ const routes = [
 ]
 const router = new VueRouter({
   linkExactActiveClass: "active",
-  routes,
+  routes
 })
 router.beforeEach((to, from, next) => {
   store.dispatch('fetchUser')
