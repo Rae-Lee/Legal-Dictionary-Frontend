@@ -37,7 +37,6 @@ export default {
     }
   },
   created () {
-    console.log(this.$router)
     const { page = '' } = this.$route.query
     const { id } = this.$route.params
     this.fetchData({ page, id })

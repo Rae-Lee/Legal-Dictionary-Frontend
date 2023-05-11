@@ -3,9 +3,10 @@
     <nav class="navbar  navbar-expand-lg  navbar-light custom-navbar" v-if="getRouteName !== 'login' && getRouteName !== 'register' && getRouteName !== 'adminLogin'">
       <div class="navigation">
         <div class="element container-fluid">
-          <div v-if="!role">
+          <div v-if="!role" class="px-5">
+            <h5>
            <img src="../assets/LOGO.png" alt="logo" width="50" height="50">
-           <h3>法律用語辭典</h3>
+           法律用語辭典</h5>
            </div>
           <router-link to="/" class="brand nav-brand" v-if="role === 'user'" >
             <img src="../assets/LOGO.png" alt="logo" width="50" height="50">法律用語辭典
@@ -14,6 +15,8 @@
               <img src="../assets/LOGO.png" alt="logo" width="50" height="50">法律用語辭典
             </router-link>
           <div class="navElement">
+             <router-link to="/login" class="layout-buttom" v-if="!isAuthenticated">登入
+                    </router-link>
             <ul class="nav" v-if="isAuthenticated">
               <li class="nav-item">
                  <router-link class="nav-link" :to="{name: 'profile', params: {id: currentUser.id}}">{{ currentUser.name }}，你好</router-link>

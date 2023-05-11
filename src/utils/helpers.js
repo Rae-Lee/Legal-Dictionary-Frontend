@@ -1,7 +1,7 @@
 import axios from 'axios'
 import Swal from 'sweetalert2'
 
-const baseURL = 'http://legal-dictionary.ap-southeast-1.elasticbeanstalk.com/api/v1'
+const baseURL = 'https://legal-dictionary.rae-lee.club/api/v1'
 const axiosInstance = axios.create({ baseURL })
 axiosInstance.interceptors.request.use(config => {
   const token = localStorage.getItem('token')
@@ -21,10 +21,9 @@ const Toast = Swal.mixin({
   showConfirmButton: false,
   timer: 3000
 })
-export const errHandler = (data, router, errMessage) => {
+export const errHandler = (data, router) => {
   const code = data.status
   if (code === 400) {
-    console.log(data.message)
     for (let message of data.message) {
       Toast.fire({
         icon: 'warning',
@@ -32,11 +31,12 @@ export const errHandler = (data, router, errMessage) => {
       })
     }
   } else if (code === 401) {
+    console.log(data)
     Toast.fire({
       icon: 'warning',
       title: data.message
     })
-    router.push('/login')
+    // router.push('/login')
   } else if (code === 403) {
     Swal.fire({
       icon: 'error',

@@ -51,6 +51,5 @@ export default new Vuex.Store({
         commit('revokeAuthentication')
       }
     }
-  },
-  modules: {}
+  }
 })

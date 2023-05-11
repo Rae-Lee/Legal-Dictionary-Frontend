@@ -1,8 +1,8 @@
  <template>
  <!-- ======= Works Section ======= -->
-<section v-if="getRouteName !== 'login' && getRouteName !== 'register' && getRouteName !== 'adminLogin' && role === 'user'" class="section  site-filter">
+<section class="section  site-filter" v-if="getRouteName !== 'login' && getRouteName !== 'register' && getRouteName !== 'adminLogin' && role !== 'admin'">
       <div class="work-place">
-        <div class="row mb-5 align-items-center d-flex">
+        <div class="row mb-5 align-items-center d-flex" >
            <div class="col-md-12 col-lg-6 mb-4 mb-lg-0 sign" data-aos="fade-up">
                <h2 class="slogan">寫訴狀的最佳幫手！</h2>
                <p class="mb-0 description">查詢用語相關法條和裁判</p>

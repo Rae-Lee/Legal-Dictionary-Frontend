@@ -40,7 +40,11 @@ const routes = [
   {
     path: '/keywords/:id/notes',
     name: 'keywords notes',
-    component: () => import('../views/keywordsNotes.vue')
+    component: () => import('../views/keywordsNotes.vue'),
+    beforeEnter: (to, from, next) => {
+      store.dispatch('fetchUser')
+      next()
+    }
   },
   {
     path: '/references/:id',
@@ -50,17 +54,29 @@ const routes = [
   {
     path: '/users/:id/favorites',
     name: 'favorites',
-    component: () => import('../views/favorites.vue')
+    component: () => import('../views/favorites.vue'),
+    beforeEnter: (to, from, next) => {
+      store.dispatch('fetchUser')
+      next()
+    }
   },
   {
     path: '/users/:id/notes',
     name: 'notes',
-    component: () => import('../views/notes.vue')
+    component: () => import('../views/notes.vue'),
+    beforeEnter: (to, from, next) => {
+      store.dispatch('fetchUser')
+      next()
+    }
   },
   {
     path: '/users/:id/profile',
     name: 'profile',
-    component: () => import('../views/profile.vue')
+    component: () => import('../views/profile.vue'),
+    beforeEnter: (to, from, next) => {
+      store.dispatch('fetchUser')
+      next()
+    }
   },
   {
     path:'/',
@@ -76,9 +92,5 @@ const routes = [
 const router = new VueRouter({
   linkExactActiveClass: "active",
   routes
-})
-router.beforeEach((to, from, next) => {
-  store.dispatch('fetchUser')
-  next()
 })
 export default router
