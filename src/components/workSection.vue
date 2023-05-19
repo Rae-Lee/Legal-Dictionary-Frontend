@@ -9,7 +9,7 @@
              </div>
           <div class="col-md-12 col-lg-6 text-start text-lg-end tabs" data-aos="fade-up" data-aos-delay="100">
             <div id="filters" class="filters">
-              <router-link to="/" class="px-3">首頁</router-link>
+              <router-link to="/home" class="px-3">首頁</router-link>
               <router-link :to="{
                 name: 'favorites', params: {
                   id: currentUser.id
