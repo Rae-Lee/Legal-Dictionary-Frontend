@@ -54,7 +54,7 @@ export default {
             this.errMessage = data.message
             return
           }
-          errHandler(data, this.$router, this.errMessage)
+          errHandler(data, this.$router, this.$route)
           return
         }
         this.keywords = data.data.likes

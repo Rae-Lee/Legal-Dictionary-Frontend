@@ -21,7 +21,7 @@ const Toast = Swal.mixin({
   showConfirmButton: false,
   timer: 3000
 })
-export const errHandler = (data, router) => {
+export const errHandler = (data, router, route) => {
   const code = data.status
   if (code === 400) {
     for (let message of data.message) {
@@ -30,22 +30,21 @@ export const errHandler = (data, router) => {
         title: message
       })
     }
-  } else if (code === 401) {
-    console.log(data)
+  } else if (code === 401 && (route.name === 'keywords notes' || route.name === 'notes' || route.name === 'favorites')) {
     Toast.fire({
       icon: 'warning',
       title: data.message
     })
-    // router.push('/login')
+    router.push('/login')
   } else if (code === 403) {
     Swal.fire({
       icon: 'error',
       title: data.message
     })
   } else if (code === 500) {
-    Swal.fire({
-      icon: 'error',
-      title: '無法取得資料，請稍後再試！'
+    Toast.fire({
+      icon: 'warning',
+      title: '正在讀取資料，請稍等！'
     })
   }
 }

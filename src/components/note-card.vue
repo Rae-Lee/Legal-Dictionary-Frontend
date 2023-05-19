@@ -12,7 +12,7 @@
               </div>
             </div>
             <div class=" close">
-                <button type="button" class="save-button btn btn-outline-secondary" aria-label="add" @click="addNote(notes[0].elementId)" :disabled="isLoading">{{ isLoading ? "處理中..." : "新增" }}</button>
+                <button type="button" class="save-button btn btn-outline-secondary" aria-label="add" @click="addNote(keyword)" :disabled="isLoading">{{ isLoading ? "處理中..." : "新增" }}</button>
             </div>
           </div>
         </div>
@@ -50,6 +50,10 @@ export default {
   props: {
     initialNotes: {
       type: Array,
+      required: true
+    },
+    keyword: {
+      type: Number,
       required: true
     }
   },

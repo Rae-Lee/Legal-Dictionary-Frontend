@@ -61,7 +61,7 @@ export default {
           return
         }
         localStorage.setItem('token', data.data.token)
-        this.$router.push('/')
+        this.$router.push('/home')
         successHandler(data)
       } catch (err) {
         this.isProcessing = false

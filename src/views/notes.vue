@@ -93,7 +93,7 @@ export default {
             this.errMessage = data.message
             return
           }
-          errHandler(data, this.$router)
+          errHandler(data, this.$router, this.$route)
           return
         }
         this.notes = data.data.notes
@@ -186,7 +186,7 @@ export default {
         const res = await noteAPI.editNotes({ id, content })
         const { data } = res
         if (data.status !== 200) {
-          errHandler(data, this.$router)
+          errHandler(data, this.$router, this.$route)
           this.isEditing = false
           return
         }
