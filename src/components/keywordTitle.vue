@@ -2,7 +2,7 @@
 <div class="post-preview dashboard">
   <div>
   <span class="post-title" >
-    <router-link to="/" class="post" >
+    <router-link to="/home" class="post" >
       <i class="fa-solid fa-angle-left angle post" ></i>
     </router-link>{{ keyword.name }}
     <a  @click="addFavorite(keyword.id)" :disabled="isProcessing">
