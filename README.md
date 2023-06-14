@@ -9,6 +9,7 @@
 </p>
 
 
+
 > Your helpful assistant in writing a complaint letter.
 
 Providing with keyword search, find relevant legal provisions and the most cited judgments and take notes.
@@ -23,15 +24,18 @@ Default account:
 | user1 | 12345678  |
 | user2 | 12345678  |
 
+
 Backend-end Repo: [Legal-Dictionary](https://github.com/Rae-Lee/Legal-Dictionary)
 
 Law data came from [全國法規資料庫](https://law.moj.gov.tw/) APIs.
 
 Judgements data was obtained from scraping 司法院裁判書系統 website by [legal-dictinary-crawler](https://github.com/Rae-Lee/legal_dictionary_crawler).
 
+
 ## :book: Feature
 
-![]((https://raw.githubusercontent.com/Rae-Lee/Legal-Dictionary-Frontend/main/src/assets/feature1.png)  |  ![]((https://raw.githubusercontent.com/Rae-Lee/Legal-Dictionary-Frontend/main/src/assets/feature2.png))
+![](https://raw.githubusercontent.com/Rae-Lee/Legal-Dictionary-Frontend/main/src/assets/feature1.png)  |  ![](https://raw.githubusercontent.com/Rae-Lee/Legal-Dictionary-Frontend/main/src/assets/feature2.png)
+
 
 ## :flower_playing_cards: Usage
 
@@ -45,26 +49,35 @@ Judgements data was obtained from scraping 司法院裁判書系統 website by [
 #### Homepage
 
 First, input your name and password to log in.
+
 ![](/src/assets/login.gif)
 
 Search for legal terminology keywords or  the criminal charges.(Currently, only criminal case information is available, while civil and administrative cases are still under development)
+
 ![](/src/assets/search.gif)
+
 
 #### Navigate
 
 You will get relevant legal provisions and the most cited judgments.
+
 ![](/src/assets/legal.gif)
 
 Click the judgement name to read the complete content of the judgment.
+
 ![](/src/assets/verdit.gif)
+
 
 #### Add notes
 
 Add messages to record your thoughts. 
+
 ![](/src/assets/message.PNG)
  
 And you can see all the messages in your note.
+
 ![](/src/assets/note.PNG)
+
 
 ### Administrator side
 
@@ -74,9 +87,11 @@ Default administrator account:
 | ----- |---------- | 
 | root  | 12345678  |
 
+
 Administrators can suspend a user'sprivileges. 
 
 Suspended users will be unable to log in until administrators restore the user's privileges.
+
 ![](/src/assets/admin-page.PNG)
 
 
