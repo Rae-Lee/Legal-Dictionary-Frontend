@@ -72,11 +72,11 @@ Click the judgement name to read the complete content of the judgment.
 
 Add messages to record your thoughts. 
 
-![](/src/assets/message.PNG)
+![](/src/assets/message.gif)
  
 And you can see all the messages in your note.
 
-![](/src/assets/note.PNG)
+![](/src/assets/note.gif)
 
 
 ### Administrator side
