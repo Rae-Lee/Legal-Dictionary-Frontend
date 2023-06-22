@@ -61,6 +61,8 @@ export default {
           return
         }
         localStorage.setItem('token', data.data.token)
+        console.log(data.data.user)
+        this.$store.commit('setUser', data.data.user)
         this.$router.push('/home')
         successHandler(data)
       } catch (err) {
